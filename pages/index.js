@@ -36,6 +36,11 @@ export default function PaginaInicial() {
   //  const username = 'matheusgondra';
   const [username, setUsername] = React.useState("matheusgondra");
   const roteamento = useRouter();
+  const [name, setName] = useState("");
+
+  const githubData = fetch(`https://api.github.com/users/${username}`)
+    .then((response) => response.json())
+    .then((data) => setName(data.name));
 
   return (
     <>
@@ -74,7 +79,7 @@ export default function PaginaInicial() {
               width: { xs: '100%', sm: '50%' }, textAlign: 'center', marginBottom: '32px',
             }}
           >
-            <Title tag="h2">Bem vindo de volta!</Title>
+            <Title tag="h2">Bem vindo de volta {name}!</Title>
             <Text variant="body3" styleSheet={{ marginBottom: '32px', color: appConfig.theme.colors.neutrals[300] }}>
               {appConfig.name}
             </Text>
