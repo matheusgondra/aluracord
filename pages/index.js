@@ -1,5 +1,5 @@
 import { Box, Button, Text, TextField, Image } from "@skynexui/components";
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/router";
 import appConfig from "../config.json";
 
@@ -138,7 +138,7 @@ export default function PaginaInicial() {
                 borderRadius: '50%',
                 marginBottom: '16px',
               }}
-              src={`https://github.com/${username}.png`}
+              src={username.length > 2 ? `https://github.com/${username}.png` : ""}
             />
             <Text
               variant="body4"
