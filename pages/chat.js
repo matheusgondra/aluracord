@@ -95,6 +95,27 @@ export default function ChatPage() {
                         color: appConfig.theme.colors.neutrals[200],
                      }}
                   />
+                  <Button
+                     label='Enviar'
+                     size='lg'
+                     type='submit'
+                     onClick={(e) => {
+                        e.preventDefault();
+                        handleNovaMensagem(mensagem);
+                     }}
+                     styleSheet={{
+                        width: "10%",
+                        height: "83%",
+                        marginBottom: "7px"
+                     }}
+                     buttonColors={{
+                        contrastColor: appConfig.theme.colors.neutrals["000"],
+                        mainColor: appConfig.theme.colors.primary[500],
+                        mainColorLight: appConfig.theme.colors.primary[400],
+                        mainColorStrong: appConfig.theme.colors.primary[600],
+                     }}
+                  >
+                  </Button>
                </Box>
             </Box>
          </Box>
