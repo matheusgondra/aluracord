@@ -2,13 +2,25 @@ import { Box, Text, TextField, Image, Button } from '@skynexui/components';
 import React, { useEffect, useState } from 'react';
 import appConfig from '../config.json';
 import { createClient } from '@supabase/supabase-js';
+import { useRouter } from 'next/router';
+import { ButtonSendSticker } from "../src/components/ButtonSendSticker.js";
 
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzQwNDY2OCwiZXhwIjoxOTU4OTgwNjY4fQ.8pEOUA0W8AuO_rg-mWkarzxvAfM5uPNi2dc9i2266Z4";
 const SUPABASE_URL = "https://iwisxdwdiwfxpjpbfhfn.supabase.co";
 const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-export default function ChatPage() {
+function escutaMensagemEmTempoReal(adicionaMensagem) {
+   return supabaseClient
+      .from("mensagens")
+      .on("INSERT", (respostaLive) => {
+         adicionaMensagem(respostaLive.new)
+      })
+      .subscribe(); 
+}
 
+export default function ChatPage() {
+   const roteamento = useRouter();
+   const usuarioLogado = roteamento.query.username;
    const [mensagem, setMensagem] = useState("");
    const [listaDeMensagens, setListaDeMensagens] = useState([]);
 
@@ -19,14 +31,20 @@ export default function ChatPage() {
          .order("id", { ascending: false })
          .then(({ data }) => {
             console.log("Dados do Supabase: ", data)
-            setListaDeMensagens(data)
+            setListaDeMensagens(data);
          })
+         escutaMensagemEmTempoReal((novaMensagem) => {
+            console.log("Nova mensagemm", novaMensagem)
+            setListaDeMensagens((valorAtualDaLista) => {
+               return [novaMensagem, ...valorAtualDaLista]
+            });
+         });
    }, [])
 
    function handleNovaMensagem(novaMensagem) {
       const mensagem = {
          // id: listaDeMensagens.length + 1,
-         de: "matheusgondra",
+         de: usuarioLogado,
          texto: novaMensagem
       }
       supabaseClient
@@ -36,7 +54,6 @@ export default function ChatPage() {
          ])
          .then(({ data }) => {
             console.log("Criando mensagem: ", data)
-            setListaDeMensagens([data[0], ...listaDeMensagens]);
          })
 
       setMensagem("");
@@ -120,6 +137,14 @@ export default function ChatPage() {
                         color: appConfig.theme.colors.neutrals[200],
                      }}
                   />
+
+                  <ButtonSendSticker
+                     onStickerClick={(sticker) => {
+                        // console.log("usando o componente: salva esse sticker no banco", sticker);
+                        handleNovaMensagem(`:sticker: ${sticker}`)
+                     }}
+                  />
+
                   <Button
                      label='Enviar'
                      size='lg'
@@ -222,7 +247,14 @@ function MessageList(props) {
                         {(new Date().toLocaleDateString())}
                      </Text>
                   </Box>
-                  {mensagem.texto}
+                  {mensagem.texto.startsWith(":sticker:")
+                  ? (
+                     <Image src={mensagem.texto.replace(":sticker:", "")} />
+                  ) 
+                  : (
+                     mensagem.texto
+                  )}
+                  {/* {mensagem.texto} */}
                </Text>
             )
          })}

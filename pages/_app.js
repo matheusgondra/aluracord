@@ -1,3 +1,5 @@
+import appConfig from '../config.json';
+
 function GlobalStyle() {
    return (
       <style global jsx>{`
@@ -22,7 +24,11 @@ function GlobalStyle() {
         #__next > * {
           flex: 1;
         }
-        /* ./App fit Height */ 
+        /* ./App fit Height */
+        
+        ::-webkit-scrollbar {
+          background-color: #00000000;
+        }
       `}</style>
    );
 }
